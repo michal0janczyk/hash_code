@@ -10,7 +10,7 @@ using namespace boost;
 
 int main() {
 
-
+	// hej
 	// create a typedef for the Graph type
 	typedef adjacency_list<vecS, vecS, bidirectionalS> Graph;
 
