@@ -1,3 +1,4 @@
+
 #include<iostream>
 #include<vector>
 #include<cassert>
@@ -5,7 +6,6 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 
-using namespace std;
 using namespace boost;
 
 int main() {

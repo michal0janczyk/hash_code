@@ -1,3 +1,4 @@
+
 HashCode2018/HashCode2018/Debug/vc141.pdb
 HashCode2018/HashCode2018/Debug/vc141.idb
 HashCode2018/HashCode2018/Debug/HashCode2018.tlog/CL.read.1.tlog
@@ -16,3 +17,7 @@ HashCode2018/.vs/HashCode2018/v15/.suo
 HashCode2018/HashCode2018/Debug/HashCode2018.tlog/HashCode2018.lastbuildstate
 HashCode2018/HashCode2018/Debug/HashCode2018.tlog/CL.write.1.tlog
 HashCode2018/Debug/HashCode2018.ilk
+.idea/*
+cmake-build*
+CMakeLists.txt
+
