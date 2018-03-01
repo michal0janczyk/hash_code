@@ -31,8 +31,24 @@ struct Ride {
 struct Vehicle {
     int x;
     int y;
+    Ride current_ride;
+    bool is_busy;
     std::vector<Ride> history;
-    Vehicle() : x(0), y(0) {}
+    Vehicle() : x(0), y(0), is_busy(false) {}
+
+    void update() {
+
+    }
+
+    void assign_ride(const Ride& ride) {
+        current_ride = ride;
+        is_busy = true;
+    }
+
+    void finish_ride() {
+        history.push_back(current_ride);
+        is_busy = false;
+    }
 
 };
 
@@ -42,11 +58,11 @@ int calculate_distance(int start_x, int start_y, int end_x, int end_y) {
 
 
 int main() {
-    int rows, columns, no_of_vehicles, no_of_rides, bonus, steps;
+    int rows, columns, no_of_vehicles, no_of_rides, bonus, max_steps;
 
     std::vector<Ride> rides;
 
-    std::cin >> rows >> columns >> no_of_vehicles >> no_of_rides >> bonus >> steps;
+    std::cin >> rows >> columns >> no_of_vehicles >> no_of_rides >> bonus >> max_steps;
     std::cin.ignore();
     for (int i{0}; i < no_of_rides; ++i) {
         Ride ride;
@@ -56,7 +72,7 @@ int main() {
         rides.emplace_back(ride);
     }
 
-    for (int step{0}; step < steps; ++steps) {
+    for (int step{0}; step < max_steps; ++max_steps) {
 
     }
 
