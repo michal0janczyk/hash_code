@@ -202,14 +202,14 @@ void Update(int t) {
 void print_results() {
     std::stringstream ss;
     for (const auto& vehicle : g_Vechicles) {
-		ss << vehicle->m_index + 1;
+		ss << vehicle->history.size();
         for (const auto& ride : vehicle->history) {
             ss << ' ' << ride->index ;
         }
 		ss << endl;
     }
 
-    std::cout << ss.str() << std::endl;
+    std::cout << ss.str();
 }
 
 int main() {
