@@ -10,6 +10,13 @@
 
 
 struct Ride {
+    enum RIDE_STATUS {
+        NOT_TAKEN,
+        PENDING,
+        ACTIVE,
+        FINISHED
+    } ride_status;
+
     int start_row;
     int start_column;
     int finish_row;
@@ -25,19 +32,50 @@ struct Ride {
         std::cout << "earliest_start: " << earliest_start << '\n';
         std::cout << "latest_finish: " << latest_finish << '\n';
     }
+
+    Ride() : ride_status(NOT_TAKEN) {}
 };
 
 
 struct Vehicle {
-    int x;
-    int y;
+    int m_x;
+    int m_y;
     Ride current_ride;
     bool is_busy;
     std::vector<Ride> history;
-    Vehicle() : x(0), y(0), is_busy(false) {}
+    Vehicle() : m_x(0), m_y(0), is_busy(false) {}
 
     void update() {
+        switch (current_ride.ride_status) {
+            case Ride::PENDING:
+                go_to(current_ride.start_row, current_ride.start_column);
+                break;
+            case Ride::ACTIVE:
+                go_to(current_ride.finish_row, current_ride.finish_column);
+                break;
+            default:
+                throw 42;
+        }
+    }
 
+    bool go_to(int x, int y) {
+        if (x != m_x) {
+            if (x < m_x) {
+                --m_x;
+            } else {
+                ++m_x;
+            }
+        } else if (y != m_y) {
+            if (y < m_y) {
+                --m_y;
+            } else {
+                ++m_y;
+            }
+        } else {
+            return true;
+        }
+
+        return false;
     }
 
     void assign_ride(const Ride& ride) {
