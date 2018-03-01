@@ -127,6 +127,9 @@ void Scheduler(int t){
 
 	vector<Ride> currentRides;
 	for (auto& r : g_Rides){
+		if (currentRides.size() > max(X_RIDES, (int)freeCars.size())) {
+			return;
+		}
 		if (r.earliest_start > t && r.ride_status == Ride::NOT_TAKEN) {
 			currentRides.push_back(r);
 		}
