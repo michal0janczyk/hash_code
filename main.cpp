@@ -8,6 +8,8 @@
 
 //using namespace boost;
 
+using namespace std;
+
 
 struct Ride {
     int start_row;
@@ -57,6 +59,19 @@ int calculate_distance(int start_x, int start_y, int end_x, int end_y) {
 }
 
 
+vector<Vehicle> g_Vechicles;
+
+
+void Update(int t) {
+
+	for (auto& vehicle : g_Vechicles) {
+		vehicle.update();
+	}
+
+}
+
+
+
 int main() {
     int rows, columns, no_of_vehicles, no_of_rides, bonus, max_steps;
 
@@ -72,7 +87,16 @@ int main() {
         rides.emplace_back(ride);
     }
 
+
+	// Update
     for (int step{0}; step < max_steps; ++max_steps) {
+
+		Update(step);
+
+
+
+
+
 
     }
 
