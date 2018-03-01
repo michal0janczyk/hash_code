@@ -13,7 +13,7 @@
 using namespace std;
 
 
-int X_RIDES = 10;
+int X_RIDES = 20;
 int rows, columns, no_of_vehicles, no_of_rides, bonus, max_steps;
 
 struct Ride {
@@ -157,8 +157,8 @@ void Scheduler(int t){
 
 	vector<shared_ptr<Ride>> currentRides;
 	for (auto& r : g_Rides){
-		if (currentRides.size() > max(X_RIDES, (int)freeCars.size())) {
-			return;
+		if (currentRides.size() > max(X_RIDES, (int)freeCars.size()-1)) {
+			break;
 		}
 		if (r->earliest_start >= t && r->ride_status == Ride::NOT_TAKEN) {
 			currentRides.push_back(r);
@@ -168,7 +168,7 @@ void Scheduler(int t){
 	for (auto& car : freeCars) {
 
 		int bestCost = 0;
-		int bestCostIndex = 9999;
+		int bestCostIndex = 0;
 
 		for (int i =0; i < currentRides.size(); ++i) {
 
