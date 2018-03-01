@@ -10,20 +10,20 @@
 
 
 struct Ride {
-    int a;
-    int b;
-    int x;
-    int y;
-    int s;
-    int f;
+    int start_row;
+    int start_column;
+    int finish_row;
+    int finish_column;
+    int earliest_start;
+    int latest_finish;
 
     void print() {
-        std::cout << "a: " << a << '\n';
-        std::cout << "b: " << b << '\n';
-        std::cout << "x: " << x << '\n';
-        std::cout << "y: " << y << '\n';
-        std::cout << "s: " << s << '\n';
-        std::cout << "f: " << f << '\n';
+        std::cout << "start_row: " << start_row << '\n';
+        std::cout << "start_column: " << start_column << '\n';
+        std::cout << "finish_row: " << finish_row << '\n';
+        std::cout << "finish_column: " << finish_column << '\n';
+        std::cout << "earliest_start: " << earliest_start << '\n';
+        std::cout << "latest_finish: " << latest_finish << '\n';
     }
 };
 
@@ -38,17 +38,17 @@ struct Vehicle {
 
 
 int main() {
-    int r, c, f, n, b, t;
+    int rows, columns, no_of_vehicles, no_of_rides, bonus, steps;
 
     std::vector<Ride> rides;
 
-    std::cin >> r >> c >> f >> n >> b >> t;
+    std::cin >> rows >> columns >> no_of_vehicles >> no_of_rides >> bonus >> steps;
     std::cin.ignore();
-    for (int i{0}; i < n; ++i) {
+    for (int i{0}; i < no_of_rides; ++i) {
         Ride ride;
-        std::cin >> ride.a >> ride.b >> ride.x >> ride.y >> ride.s >> ride.f;
+        std::cin >> ride.start_row >> ride.start_column >> ride.finish_row >> ride.finish_column >> ride.earliest_start >> ride.latest_finish;
         std::cin.ignore();
-//        ride.print();
+        ride.print();
         rides.emplace_back(ride);
     }
 
