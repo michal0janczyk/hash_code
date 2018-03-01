@@ -28,6 +28,7 @@ struct Ride {
     int finish_column;
     int earliest_start;
     int latest_finish;
+    int index;
 
     void print() {
         std::cout << "start_row: " << start_row << '\n';
@@ -43,12 +44,13 @@ struct Ride {
 
 
 struct Vehicle {
+    int m_index;
     int m_x;
     int m_y;
     Ride current_ride;
     bool is_busy;
     std::vector<Ride> history;
-    Vehicle() : m_x(0), m_y(0), is_busy(false) {}
+    Vehicle(int index) : m_index(index), m_x(0), m_y(0), is_busy(false) {}
 
     void update() {
         switch (current_ride.ride_status) {
@@ -166,7 +168,17 @@ void Update(int t) {
 
 }
 
+void print_results() {
+    std::stringstream ss;
+    for (const auto& vehicle : g_Vechicles) {
+        ss << vehicle.m_index << ' ';
+        for (const auto& ride : vehicle.history) {
+            ss << ride.index << ' ';
+        }
+    }
 
+    std::cout << ss.str() << std::endl;
+}
 
 int main() {
     int rows, columns, no_of_vehicles, no_of_rides, bonus, max_steps;
@@ -177,6 +189,7 @@ int main() {
     std::cin.ignore();
     for (int i{0}; i < no_of_rides; ++i) {
         Ride ride;
+        ride.index = i;
         std::cin >> ride.start_row >> ride.start_column >> ride.finish_row >> ride.finish_column >> ride.earliest_start >> ride.latest_finish;
         std::cin.ignore();
         ride.print();
@@ -185,6 +198,10 @@ int main() {
 	sort(g_Rides.begin(), g_Rides.end(), [](auto a, auto b) {
 		return a.earliest_start < b.earliest_start;
 	});
+
+    for (int i{0}; i < no_of_vehicles ; ++i) {
+        g_Vechicles.emplace_back(Vehicle(i));
+    }
 
 	// Update
     for (int step{0}; step < max_steps; ++max_steps) {
