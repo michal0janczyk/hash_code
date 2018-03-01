@@ -28,6 +28,15 @@ struct Ride {
 };
 
 
+struct Vehicle {
+    int x;
+    int y;
+    std::vector<Ride> history;
+    Vehicle() : x(0), y(0) {}
+
+};
+
+
 int main() {
     int r, c, f, n, b, t;
 
