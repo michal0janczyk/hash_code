@@ -155,8 +155,6 @@ void Scheduler(int t){
 		}
 	}
 
-//	vector<Solution> solutions;
-
 	vector<shared_ptr<Ride>> currentRides;
 	for (auto& r : g_Rides){
 		if (currentRides.size() > max(X_RIDES, (int)freeCars.size())) {
@@ -171,8 +169,6 @@ void Scheduler(int t){
 
 		int bestCost = 0;
 		int bestCostIndex = 9999;
-
-
 
 		for (int i =0; i < currentRides.size(); ++i) {
 
@@ -226,7 +222,7 @@ int main() {
         ride.index = i;
         std::cin >> ride.start_row >> ride.start_column >> ride.finish_row >> ride.finish_column >> ride.earliest_start >> ride.latest_finish;
         std::cin.ignore();
-        ride.print();
+       // ride.print();
 		g_Rides.push_back(make_shared<Ride>(ride));
     }
 
