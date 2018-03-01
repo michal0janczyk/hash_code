@@ -3,6 +3,7 @@
 #include<vector>
 #include<cassert>
 #include <algorithm>
+#include <memory>
 #include "boost/graph/graph_traits.hpp"
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
@@ -12,7 +13,7 @@
 using namespace std;
 
 
-int X_RIDES;
+int X_RIDES = 10;
 int rows, columns, no_of_vehicles, no_of_rides, bonus, max_steps;
 
 struct Ride {
@@ -48,25 +49,28 @@ struct Vehicle {
     int m_index;
     int m_x;
     int m_y;
-    Ride current_ride;
+	shared_ptr<Ride> current_ride;
     bool is_busy;
-    std::vector<Ride> history;
+    std::vector<shared_ptr<Ride>> history;
     Vehicle(int index) : m_index(index), m_x(0), m_y(0), is_busy(false) {}
 
     void update() {
-        switch (current_ride.ride_status) {
+        switch (current_ride->ride_status) {
             case Ride::PENDING:
-				if (go_to(current_ride.start_row, current_ride.start_column)) {
-					current_ride.ride_status = Ride::ACTIVE;
+				if (go_to(current_ride->start_row, current_ride->start_column)) {
+					current_ride->ride_status = Ride::ACTIVE;
 				}
                 break;
             case Ride::ACTIVE:
-				if (go_to(current_ride.finish_row, current_ride.finish_column)) {
+				if (go_to(current_ride->finish_row, current_ride->finish_column)) {
 					finish_ride();
 				}
                 break;
+			case Ride::FINISHED:
+				break;
             default:
-                throw 42;
+				assert(false);
+               // throw 42;
         }
     }
 
@@ -90,14 +94,14 @@ struct Vehicle {
         return false;
     }
 
-    void assign_ride(const Ride& ride) {
+    void assign_ride(const shared_ptr<Ride> ride) {
         current_ride = ride;
         is_busy = true;
-		current_ride.ride_status = Ride::PENDING;
+		current_ride->ride_status = Ride::PENDING;
     }
 
     void finish_ride() {
-		current_ride.ride_status = Ride::FINISHED;
+		current_ride->ride_status = Ride::FINISHED;
         history.push_back(current_ride);
         is_busy = false;
     }
@@ -109,8 +113,8 @@ int calculate_distance(int start_x, int start_y, int end_x, int end_y) {
 }
 
 
-vector<Vehicle> g_Vechicles;
-std::vector<Ride> g_Rides;
+vector<shared_ptr<Vehicle>> g_Vechicles;
+std::vector<shared_ptr<Ride>> g_Rides;
 
 
 struct Solution {
@@ -121,19 +125,19 @@ struct Solution {
 
 
 
-int calculateCost(Vehicle& vehicle, Ride& ride, int t) {
+int calculateCost(shared_ptr<Vehicle> vehicle, shared_ptr<Ride> ride, int t) {
 
 	int cost = 0;
-	int distToTarget = calculate_distance(vehicle.m_x, vehicle.m_y, ride.start_row, ride.start_column);
-	int routeDist = calculate_distance(ride.start_row, ride.start_column, ride.finish_row, ride.finish_column);
+	int distToTarget = calculate_distance(vehicle->m_x, vehicle->m_y, ride->start_row, ride->start_column);
+	int routeDist = calculate_distance(ride->start_row, ride->start_column, ride->finish_row, ride->finish_column);
 
 	// bonus
-	if (distToTarget < ride.earliest_start - t) {
+	if (distToTarget < ride->earliest_start - t) {
 		cost += bonus;
 	}
 
 	// route cost
-	if (distToTarget + routeDist < ride.latest_finish - t) {
+	if (distToTarget + routeDist < ride->latest_finish - t) {
 		cost += routeDist;
 	}
 
@@ -143,22 +147,22 @@ int calculateCost(Vehicle& vehicle, Ride& ride, int t) {
 
 void Scheduler(int t){
 
-	vector<Vehicle> freeCars;
+	vector<shared_ptr<Vehicle>> freeCars;
 	for (auto& v : g_Vechicles) {
 
-		if (!v.is_busy) {
+		if (!v->is_busy) {
 			freeCars.push_back(v);
 		}
 	}
 
 //	vector<Solution> solutions;
 
-	vector<Ride> currentRides;
+	vector<shared_ptr<Ride>> currentRides;
 	for (auto& r : g_Rides){
 		if (currentRides.size() > max(X_RIDES, (int)freeCars.size())) {
 			return;
 		}
-		if (r.earliest_start > t && r.ride_status == Ride::NOT_TAKEN) {
+		if (r->earliest_start >= t && r->ride_status == Ride::NOT_TAKEN) {
 			currentRides.push_back(r);
 		}
 	}
@@ -166,7 +170,9 @@ void Scheduler(int t){
 	for (auto& car : freeCars) {
 
 		int bestCost = 0;
-		int bestCostIndex = 99999999999;
+		int bestCostIndex = 9999;
+
+
 
 		for (int i =0; i < currentRides.size(); ++i) {
 
@@ -178,23 +184,21 @@ void Scheduler(int t){
 			}
 		}
 
-		car.assign_ride(currentRides[bestCostIndex]);
-		currentRides.erase(currentRides.begin() + bestCostIndex);
+
+		if (currentRides.size() > 0) {
+			car->assign_ride(currentRides[bestCostIndex]);
+			currentRides.erase(currentRides.begin() + bestCostIndex);
+		}
+	
 	}
 
 }
 
 
-	
-	
-
-
-
-
 void Update(int t) {
 
 	for (auto& vehicle : g_Vechicles) {
-		vehicle.update();
+		vehicle->update();
 	}
 
 }
@@ -202,10 +206,11 @@ void Update(int t) {
 void print_results() {
     std::stringstream ss;
     for (const auto& vehicle : g_Vechicles) {
-        ss << vehicle.m_index << ' ';
-        for (const auto& ride : vehicle.history) {
-            ss << ride.index << ' ';
+		ss << vehicle->m_index + 1;
+        for (const auto& ride : vehicle->history) {
+            ss << ' ' << ride->index ;
         }
+		ss << endl;
     }
 
     std::cout << ss.str() << std::endl;
@@ -222,16 +227,16 @@ int main() {
         std::cin >> ride.start_row >> ride.start_column >> ride.finish_row >> ride.finish_column >> ride.earliest_start >> ride.latest_finish;
         std::cin.ignore();
         ride.print();
-		g_Rides.emplace_back(ride);
+		g_Rides.push_back(make_shared<Ride>(ride));
     }
 
 
 	sort(g_Rides.begin(), g_Rides.end(), [](auto a, auto b) {
-		return a.earliest_start < b.earliest_start;
+		return a->earliest_start < b->earliest_start;
 	});
 
     for (int i{0}; i < no_of_vehicles ; ++i) {
-        g_Vechicles.emplace_back(Vehicle(i));
+        g_Vechicles.push_back(make_shared<Vehicle>(i));
     }
 
 	// Update
@@ -239,6 +244,8 @@ int main() {
 		Scheduler(step);
 		Update(step);
     }
+
+	print_results();
 
 	return 0;
 }
