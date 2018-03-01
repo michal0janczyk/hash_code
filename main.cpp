@@ -13,6 +13,7 @@ using namespace std;
 
 
 int X_RIDES;
+int rows, columns, no_of_vehicles, no_of_rides, bonus, max_steps;
 
 struct Ride {
     enum RIDE_STATUS {
@@ -90,6 +91,7 @@ struct Vehicle {
     void assign_ride(const Ride& ride) {
         current_ride = ride;
         is_busy = true;
+		current_ride.ride_status = Ride::PENDING;
     }
 
     void finish_ride() {
@@ -115,6 +117,28 @@ struct Solution {
 	int m_score;
 };
 
+
+
+int calculateCost(Vehicle& vehicle, Ride& ride, int t) {
+
+	int cost = 0;
+	int distToTarget = calculate_distance(vehicle.m_x, vehicle.m_y, ride.start_row, ride.start_column);
+	int routeDist = calculate_distance(ride.start_row, ride.start_column, ride.finish_row, ride.finish_column);
+
+	// bonus
+	if (distToTarget < ride.earliest_start - t) {
+		cost += bonus;
+	}
+
+	// route cost
+	if (distToTarget + routeDist < ride.latest_finish - t) {
+		cost += routeDist;
+	}
+
+	return cost;
+}
+
+
 void Scheduler(int t){
 
 	vector<Vehicle> freeCars;
@@ -124,6 +148,8 @@ void Scheduler(int t){
 			freeCars.push_back(v);
 		}
 	}
+
+//	vector<Solution> solutions;
 
 	vector<Ride> currentRides;
 	for (auto& r : g_Rides){
@@ -135,42 +161,45 @@ void Scheduler(int t){
 		}
 	}
 
-
 	for (auto& car : freeCars) {
 
+		int bestCost = 0;
+		int bestCostIndex = 99999999999;
 
+		for (int i =0; i < currentRides.size(); ++i) {
+
+			int cost = calculateCost(car, currentRides[i], t);
+
+			if (cost > bestCost) {
+				bestCost = cost;
+				bestCostIndex = i;
+			}
+		}
+
+		car.assign_ride(currentRides[bestCostIndex]);
+		currentRides.erase(currentRides.begin() + bestCostIndex);
 	}
 
-
-	vector<Solution> solutions;
-	
 }
+
+
+	
+	
+
 
 
 
 void Update(int t) {
 
-	
-	
-	Scheduler();
-	
-	
 	for (auto& vehicle : g_Vechicles) {
 		vehicle.update();
 	}
-
-	//Scheduler update
-
-
-
 
 }
 
 
 
 int main() {
-    int rows, columns, no_of_vehicles, no_of_rides, bonus, max_steps;
-
    
 
     std::cin >> rows >> columns >> no_of_vehicles >> no_of_rides >> bonus >> max_steps;
@@ -182,20 +211,16 @@ int main() {
         ride.print();
 		g_Rides.emplace_back(ride);
     }
+
+
 	sort(g_Rides.begin(), g_Rides.end(), [](auto a, auto b) {
 		return a.earliest_start < b.earliest_start;
 	});
 
 	// Update
-    for (int step{0}; step < max_steps; ++max_steps) {
-
+    for (int step{0}; step < max_steps; ++step) {
+		Scheduler(step);
 		Update(step);
-
-
-
-
-
-
     }
 
 	return 0;
