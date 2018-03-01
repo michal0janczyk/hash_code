@@ -36,6 +36,10 @@ struct Vehicle {
 
 };
 
+int calculate_distance(int start_x, int start_y, int end_x, int end_y) {
+    return std::abs(start_x - end_x) + std::abs(start_y - end_y);
+}
+
 
 int main() {
     int rows, columns, no_of_vehicles, no_of_rides, bonus, steps;
@@ -50,6 +54,10 @@ int main() {
         std::cin.ignore();
         ride.print();
         rides.emplace_back(ride);
+    }
+
+    for (int step{0}; step < steps; ++steps) {
+
     }
 
 	return 0;
